@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diavlo · Reporte de rendimiento · Mayo-junio 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A1018;
+    --bg-2:#0F1622;
+    --card:#121A28;
+    --card-2:#161F2E;
+    --line:rgba(255,255,255,.06);
+    --line-2:rgba(255,255,255,.10);
+    --text:#E6EAF2;
+    --text-2:#8A93A6;
+    --muted:#5E677A;
+    --green:#3DE5A5;
+    --green-soft:rgba(61,229,165,.12);
+    --green-line:rgba(61,229,165,.35);
+    --orange:#F59E5F;
+    --orange-soft:rgba(245,158,95,.12);
+    --orange-line:rgba(245,158,95,.35);
+    --red:#F26D6D;
+    --red-soft:rgba(242,109,109,.10);
+    --red-line:rgba(242,109,109,.35);
+    --purple:#A78BFA;
+    --yellow:#F2C84B;
+    --magenta:#EC4899;
+    --display:'Mona Sans','Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+    --body:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--green-soft);color:var(--text)}
+  a{color:inherit;text-decoration:none}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,16,24,.72);
+    backdrop-filter:saturate(140%) blur(16px);
+    -webkit-backdrop-filter:saturate(140%) blur(16px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:62px;
+  }
+  .brandname{
+    font-family:var(--display);
+    font-weight:700;font-size:14px;
+    letter-spacing:.32em;color:var(--text);
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--green-line);
+    background:var(--green-soft);
+    color:var(--green);
+    font-size:12px;font-weight:500;
+    padding:7px 15px;border-radius:999px;
+    letter-spacing:.02em;white-space:nowrap;
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:96px 0 70px;border-bottom:1px solid var(--line)}
+  .eyebrow{
+    color:var(--green);
+    font-family:var(--display);font-weight:600;
+    text-transform:uppercase;letter-spacing:.22em;
+    font-size:12px;margin-bottom:30px;
+  }
+  .hero h1{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(56px,11vw,132px);
+    line-height:.92;letter-spacing:-.03em;
+    margin-bottom:34px;
+  }
+  .hero h1 .accent{color:var(--green);display:block}
+  .lead{
+    color:var(--text-2);font-size:18px;line-height:1.7;
+    max-width:720px;font-weight:300;
+  }
+  .meta-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+    margin-top:54px;
+  }
+  .meta-card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:20px 22px;
+  }
+  .meta-card .k{
+    font-size:11px;text-transform:uppercase;letter-spacing:.18em;
+    color:var(--muted);font-weight:600;margin-bottom:10px;
+  }
+  .meta-card .v{
+    font-family:var(--display);font-weight:600;font-size:18px;
+    color:var(--text);letter-spacing:-.01em;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section.block{padding:84px 0;border-top:1px solid var(--line)}
+  .sec-num{
+    font-family:var(--display);font-weight:700;
+    color:var(--green);font-size:15px;letter-spacing:.04em;
+    margin-bottom:20px;
+  }
+  .sec-title{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(38px,5.4vw,76px);
+    line-height:.98;letter-spacing:-.022em;margin-bottom:18px;
+  }
+  .sec-lead{
+    color:var(--text-2);font-size:16px;line-height:1.7;
+    max-width:680px;font-weight:300;
+  }
+
+  /* ---------- KPI CARDS ---------- */
+  .kpi-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+    margin-top:42px;
+  }
+  .kpi{
+    position:relative;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;
+    padding:26px 24px;border-top:2px solid var(--green);
+    display:flex;flex-direction:column;min-height:188px;
+  }
+  .kpi.b-orange{border-top-color:var(--orange)}
+  .kpi.b-purple{border-top-color:var(--purple)}
+  .kpi.b-yellow{border-top-color:var(--yellow)}
+  .kpi.b-red{border-top-color:var(--red)}
+  .kpi.b-magenta{border-top-color:var(--magenta)}
+  .kpi .label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.18em;
+    color:var(--muted);font-weight:600;margin-bottom:18px;
+  }
+  .kpi .value{
+    font-family:var(--display);font-weight:800;font-size:52px;
+    line-height:1;letter-spacing:-.025em;color:var(--text);
+    font-variant-numeric:tabular-nums;
+  }
+  .kpi .value small{font-size:18px;font-weight:600;color:var(--text-2);letter-spacing:0;margin-left:4px}
+  .kpi .sub{font-size:13px;color:var(--text-2);margin-top:10px;line-height:1.45}
+  .kpi .foot{margin-top:auto;padding-top:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .badge{
+    display:inline-flex;align-items:center;
+    font-size:11px;font-weight:600;letter-spacing:.04em;
+    padding:5px 11px;border-radius:999px;text-transform:uppercase;
+  }
+  .badge.good{background:var(--green-soft);color:var(--green);border:1px solid var(--green-line)}
+  .badge.bad{background:var(--red-soft);color:var(--red);border:1px solid var(--red-line)}
+  .badge.warn{background:var(--orange-soft);color:var(--orange);border:1px solid var(--orange-line)}
+  .badge.neutral{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--line-2)}
+  .trend{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+  .trend--up{color:var(--green)}
+  .trend--down{color:var(--red)}
+  .trend--flat{color:var(--text-2)}
+
+  /* ---------- BANNERS ---------- */
+  .banners{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px}
+  .banner{
+    border-radius:14px;padding:22px 24px;
+    display:flex;gap:18px;align-items:flex-start;
+  }
+  .banner.good{border:1px solid var(--green-line);background:linear-gradient(180deg,var(--green-soft),rgba(61,229,165,0))}
+  .banner.warn{border:1px solid var(--orange-line);background:linear-gradient(180deg,var(--orange-soft),rgba(245,158,95,0))}
+  .banner .tag{
+    font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap;flex-shrink:0;
+  }
+  .banner.good .tag{color:var(--green)}
+  .banner.warn .tag{color:var(--orange)}
+  .banner .txt{color:var(--text-2);font-size:14px;line-height:1.65}
+
+  /* ---------- TABLES ---------- */
+  .table-wrap{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:16px;margin-top:42px;overflow:hidden;
+  }
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:680px}
+  thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;
+    letter-spacing:.18em;color:var(--muted);font-weight:600;
+    padding:18px 22px;border-bottom:1px solid var(--line-2);
+    white-space:nowrap;
+  }
+  thead th.num,tbody td.num{text-align:right;font-variant-numeric:tabular-nums}
+  tbody td{padding:18px 22px;border-bottom:1px solid var(--line);font-size:14px;color:var(--text)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--card-2)}
+  .cell-name{font-weight:500;color:var(--text)}
+  .cell-meta{display:block;font-size:12px;color:var(--muted);margin-top:3px;font-weight:400}
+  td.num{font-weight:500}
+
+  /* ---------- INSIGHTS ---------- */
+  .insights{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+  .insights.two{grid-template-columns:1fr 1fr}
+  .insight{
+    position:relative;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:28px 26px 28px 30px;
+  }
+  .insight::before{
+    content:"";position:absolute;left:0;top:24px;bottom:24px;width:2px;border-radius:2px;background:var(--green);
+  }
+  .insight.warn::before{background:var(--orange)}
+  .insight.bad::before{background:var(--red)}
+  .insight .num{
+    font-family:var(--display);font-weight:700;font-size:11px;
+    color:var(--green);text-transform:uppercase;letter-spacing:.16em;margin-bottom:12px;
+  }
+  .insight.warn .num{color:var(--orange)}
+  .insight.bad .num{color:var(--red)}
+  .insight .it{font-weight:600;font-size:18px;color:var(--text);margin-bottom:10px;line-height:1.25}
+  .insight .ib{font-size:14px;color:var(--text-2);line-height:1.65}
+
+  /* ---------- BENCHMARK BANNER ---------- */
+  .read-banner{
+    margin-top:22px;border-radius:14px;padding:22px 24px;
+    border:1px solid var(--green-line);
+    background:linear-gradient(180deg,var(--green-soft),rgba(61,229,165,0));
+    display:flex;gap:18px;align-items:flex-start;
+  }
+  .read-banner .tag{font-family:var(--display);font-weight:700;font-size:15px;color:var(--green);white-space:nowrap;flex-shrink:0}
+  .read-banner .txt{color:var(--text-2);font-size:14px;line-height:1.65}
+
+  /* ---------- QUOTE ---------- */
+  .quote{
+    padding:110px 0;
+    background:linear-gradient(180deg,var(--bg-2),var(--bg));
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .quote p{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(28px,4vw,48px);line-height:1.25;
+    letter-spacing:-.018em;max-width:980px;color:var(--text);
+  }
+  .quote em{color:var(--green);font-style:normal}
+
+  /* ---------- PLAN ---------- */
+  .actions{list-style:none;counter-reset:act;margin-top:42px;display:flex;flex-direction:column;gap:14px}
+  .actions li{
+    counter-increment:act;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px 28px;
+    display:grid;grid-template-columns:80px 1fr 200px;gap:24px;align-items:center;
+  }
+  .actions li::before{
+    content:counter(act,decimal-leading-zero);
+    font-family:var(--display);font-weight:700;font-size:32px;color:var(--green);
+    letter-spacing:-.02em;line-height:1;
+  }
+  .actions .at{font-weight:600;font-size:17px;color:var(--text);margin-bottom:7px;line-height:1.3}
+  .actions .ab{font-size:14px;color:var(--text-2);line-height:1.6}
+  .actions .ap{font-size:13px;color:var(--text-2);text-align:right}
+  .actions .ap b{display:block;font-family:var(--display);font-weight:700;font-size:14px;margin-top:3px}
+  .ap.alta b{color:var(--orange)}
+  .ap.media b{color:var(--text-2)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line);padding:64px 0 80px}
+  footer .fb{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.32em;color:var(--text);margin-bottom:18px}
+  footer .fl{color:var(--muted);text-transform:uppercase;font-size:12px;letter-spacing:.14em;line-height:2}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:1100px){
+    .kpi-grid{grid-template-columns:1fr 1fr}
+    .meta-grid{grid-template-columns:1fr 1fr}
+    .insights,.insights.two{grid-template-columns:1fr}
+    .banners{grid-template-columns:1fr}
+    .actions li{grid-template-columns:64px 1fr}
+    .actions .ap{grid-column:2;text-align:left;padding-top:6px}
+    .actions .ap b{display:inline;margin-top:0;margin-left:6px}
+  }
+  @media (max-width:640px){
+    .wrap{padding:0 22px}
+    .kpi-grid,.meta-grid{grid-template-columns:1fr}
+    .hero{padding:64px 0 52px}
+    .hero h1{font-size:56px}
+    section.block{padding:60px 0}
+    .quote{padding:72px 0}
+    .actions li{grid-template-columns:1fr;gap:10px}
+    .actions li::before{font-size:26px}
+    .actions .ap{grid-column:1}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brandname">D I A V L O</div>
+      <div class="pill"><span class="dot"></span>Mayo-junio 2026 · Email Marketing · ESP</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Navy Marketing · Reporte de rendimiento</div>
+      <h1>Primer mes<span class="accent">en Klaviyo.</span></h1>
+      <p class="lead">Mayo y junio de 2026 marcan el arranque de Diavlo en Klaviyo tras la migración desde Mailchimp. Un periodo de construir y medir: flujos activos, primera tanda de campañas y una base limpia de 15.100 perfiles activos para empezar a decidir con data propia.</p>
+      <div class="meta-grid">
+        <div class="meta-card"><div class="k">Periodo</div><div class="v">Mayo-junio 2026</div></div>
+        <div class="meta-card"><div class="k">Plataforma</div><div class="v">Klaviyo</div></div>
+        <div class="meta-card"><div class="k">Mercado</div><div class="v">España 🇪🇸</div></div>
+        <div class="meta-card"><div class="k">Fase</div><div class="v">Primer mes · baseline</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 01 RESUMEN EJECUTIVO -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">01 · Resumen ejecutivo</div>
+      <h2 class="sec-title">El email ya<br>genera ventas.</h2>
+      <p class="sec-lead">El canal email aporta 5.876,91 € de ingresos atribuidos, el 6,97 % de la facturación total de tienda del periodo. El reparto interno es la clave del mes: los flujos automatizados hacen el trabajo pesado y las campañas todavía no.</p>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Ingresos totales tienda</div>
+          <div class="value">84.265 <small>€</small></div>
+          <div class="sub">Facturación total del periodo</div>
+          <div class="foot"><span class="trend trend--up">▲ 25,8 %</span><span class="badge good">Crece</span></div>
+        </div>
+        <div class="kpi b-purple">
+          <div class="label">Atribuido a email</div>
+          <div class="value">5.877 <small>€</small></div>
+          <div class="sub">6,97 % sobre ingresos de tienda</div>
+          <div class="foot"><span class="badge neutral">Canal email</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Ingresos · flujos</div>
+          <div class="value">5.308 <small>€</small></div>
+          <div class="sub">90,3 % del total atribuido a email</div>
+          <div class="foot"><span class="badge good">Motor del canal</span></div>
+        </div>
+        <div class="kpi b-orange">
+          <div class="label">Ingresos · campañas</div>
+          <div class="value">569 <small>€</small></div>
+          <div class="sub">9,7 % del total atribuido a email</div>
+          <div class="foot"><span class="badge warn">A desarrollar</span></div>
+        </div>
+
+        <div class="kpi b-yellow">
+          <div class="label">Apertura · campañas</div>
+          <div class="value">37,2 <small>%</small></div>
+          <div class="sub">Mediana del sector: 43,5 %</div>
+          <div class="foot"><span class="badge warn">Por debajo</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Clics · campañas</div>
+          <div class="value">1,23 <small>%</small></div>
+          <div class="sub">Mediana del sector: 1,07 %</div>
+          <div class="foot"><span class="badge good">Sobre la mediana</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Conversión · flujos</div>
+          <div class="value">3,83 <small>%</small></div>
+          <div class="sub">97 pedidos · AOV 53,10 €</div>
+          <div class="foot"><span class="badge good">Sólido</span></div>
+        </div>
+        <div class="kpi b-magenta">
+          <div class="label">Ingreso / destinatario · flujos</div>
+          <div class="value">2,09 <small>€</small></div>
+          <div class="sub">Frente a 0,0356 € en campañas</div>
+          <div class="foot"><span class="badge good">Alta eficiencia</span></div>
+        </div>
+      </div>
+
+      <div class="banners">
+        <div class="banner good">
+          <div class="tag">✓ Lo bueno</div>
+          <div class="txt">Los flujos automatizados sostienen el 90,3 % de los ingresos de email (5.308,07 €), con 2,09 € de ingreso por destinatario. El pop-up de bienvenida convierte al 8,82 % y la salud de lista es excelente: bajas y quejas de spam muy por debajo de la mediana del sector.</div>
+        </div>
+        <div class="banner warn">
+          <div class="tag">▲ A tener en cuenta</div>
+          <div class="txt">Las campañas aportan solo el 9,7 % del atribuido (568,84 €). La apertura (37,2 %) queda por debajo de la mediana (43,5 %) y dos newsletters de contenido cerraron el periodo con 0 pedidos. El reto del próximo mes es convertir las campañas en un segundo motor de venta.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 CAMPAÑAS -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">02 · Campañas enviadas</div>
+      <h2 class="sec-title">Cinco envíos,<br>dos rentables.</h2>
+      <p class="sec-lead">Cinco newsletters durante el periodo, con entregabilidad sólida en todas (98,9 % a 99,4 %). El volumen y la entrega están bien; la conversión es donde queda recorrido. La promo 3x2 fue el envío más rentable.</p>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Campaña</th>
+                <th class="num">Destinatarios</th>
+                <th class="num">Entrega</th>
+                <th class="num">Pedidos</th>
+                <th class="num">Valor</th>
+                <th class="num">€ / dest.</th>
+                <th>Diagnóstico</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="cell-name">Newsletter 1 · Nueva colección</span><span class="cell-meta">6 may 2026 · 18:30</span></td>
+                <td class="num">3.200</td><td class="num">98,9 %</td><td class="num">1</td><td class="num">70,00 €</td><td class="num">0,0221 €</td>
+                <td><span class="badge warn">Bajo</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Newsletter 2 · 3x2</span><span class="cell-meta">14 may 2026 · 18:00</span></td>
+                <td class="num">3.210</td><td class="num">99,0 %</td><td class="num">4</td><td class="num">297,00 €</td><td class="num">0,0936 €</td>
+                <td><span class="badge good">Mejor envío</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Newsletter 3 · Bestsellers</span><span class="cell-meta">21 may 2026 · 18:00</span></td>
+                <td class="num">3.220</td><td class="num">98,9 %</td><td class="num">3</td><td class="num">202,00 €</td><td class="num">0,0633 €</td>
+                <td><span class="badge good">Sólido</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Newsletter 4 · Recordatorio SS26</span><span class="cell-meta">28 may 2026 · 18:00</span></td>
+                <td class="num">3.230</td><td class="num">99,0 %</td><td class="num">0</td><td class="num">0,00 €</td><td class="num">0,00 €</td>
+                <td><span class="badge bad">Sin conversión</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Newsletter 5 · Outfit Diavlo</span><span class="cell-meta">15 jun 2026 · 18:00</span></td>
+                <td class="num">3.250</td><td class="num">99,4 %</td><td class="num">0</td><td class="num">0,00 €</td><td class="num">0,00 €</td>
+                <td><span class="badge bad">Sin conversión</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="insights two">
+        <div class="insight">
+          <div class="num">Conclusión 01</div>
+          <div class="it">La promo 3x2 sigue siendo el mejor gancho</div>
+          <div class="ib">La Newsletter 2 (3x2) lideró el periodo con 297,00 € y 4 pedidos, el doble que cualquier otra. La oferta insignia de la marca convierte mejor que el contenido cuando aparece en campaña.</div>
+        </div>
+        <div class="insight bad">
+          <div class="num">Conclusión 02</div>
+          <div class="it">El contenido editorial no convierte por sí solo</div>
+          <div class="ib">Los envíos puramente editoriales (recordatorio SS26 y outfit) cerraron con 0 pedidos pese a buena entrega. Sin producto con precio visible ni un CTA único de compra, el contenido genera apertura pero no venta.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 FLUJOS -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">03 · Flujos automatizados</div>
+      <h2 class="sec-title">El motor real<br>del canal.</h2>
+      <p class="sec-lead">Con solo 2.594 destinatarios, los flujos generaron 5.308,07 € (3,83 % de conversión, 2,09 € por destinatario). Es el activo más rentable del programa y donde el trabajo de set-up ya está dando fruto.</p>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Flujo</th>
+                <th class="num">Destinatarios</th>
+                <th class="num">Entrega</th>
+                <th class="num">Pedidos</th>
+                <th class="num">Conv.</th>
+                <th class="num">Valor</th>
+                <th class="num">€ / dest.</th>
+                <th>Diagnóstico</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="cell-name">Pop-up bienvenida · 10 %</span><span class="cell-meta">Activo</span></td>
+                <td class="num">941</td><td class="num">97,6 %</td><td class="num">81</td><td class="num">8,82 %</td><td class="num">4.439 €</td><td class="num">4,84 €</td>
+                <td><span class="badge good">Motor principal</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Abandono de carrito (clon)</span><span class="cell-meta">Activo</span></td>
+                <td class="num">327</td><td class="num">97,6 %</td><td class="num">7</td><td class="num">2,19 %</td><td class="num">400 €</td><td class="num">1,25 €</td>
+                <td><span class="badge good">Eficiente</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Browse abandonment</span><span class="cell-meta">Activo</span></td>
+                <td class="num">1.320</td><td class="num">98,0 %</td><td class="num">9</td><td class="num">0,694 %</td><td class="num">469 €</td><td class="num">0,362 €</td>
+                <td><span class="badge warn">Por optimizar</span></td>
+              </tr>
+              <tr>
+                <td><span class="cell-name">Back in stock</span><span class="cell-meta">Activo</span></td>
+                <td class="num">3</td><td class="num">100 %</td><td class="num">0</td><td class="num">0 %</td><td class="num">·</td><td class="num">·</td>
+                <td><span class="badge neutral">Recién activo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="insights">
+        <div class="insight">
+          <div class="num">Conclusión 01</div>
+          <div class="it">La bienvenida es el activo estrella</div>
+          <div class="ib">El pop-up con 10 % de descuento convierte al 8,82 % y aporta 4,84 € por destinatario: capta al lead en su momento de máxima intención. Es el flujo que más ingreso genera de todo el programa.</div>
+        </div>
+        <div class="insight">
+          <div class="num">Conclusión 02</div>
+          <div class="it">El carrito recupera con muy poco</div>
+          <div class="ib">Abandono de carrito da 1,25 € por destinatario y 2,19 % de conversión con apenas 327 personas. La mecánica funciona; el límite es el volumen de entrada, no la creatividad.</div>
+        </div>
+        <div class="insight warn">
+          <div class="num">Conclusión 03</div>
+          <div class="it">Browse y Back in stock, infrautilizados</div>
+          <div class="ib">Browse abandonment llega a 1.320 personas pero convierte solo al 0,694 %. Back in stock apenas alcanzó a 3 destinatarios. Ambos tienen recorrido claro para aportar más sin esfuerzo creativo nuevo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 BENCHMARK -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">04 · Benchmark del sector</div>
+      <h2 class="sec-title">Dónde estamos<br>frente al mercado.</h2>
+      <p class="sec-lead">Comparativa de campañas frente a la mediana del sector (mayo 2026). El patrón es nítido: salud de lista y clics destacan, mientras que apertura e ingreso por destinatario marcan la hoja de ruta.</p>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Métrica</th>
+                <th class="num">Diavlo</th>
+                <th class="num">Mediana sector</th>
+                <th>Rendimiento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="cell-name">Tasa de apertura</td><td class="num">37,2 %</td><td class="num">43,5 %</td><td><span class="badge warn">Regular</span></td></tr>
+              <tr><td class="cell-name">Tasa de clics</td><td class="num">1,23 %</td><td class="num">1,07 %</td><td><span class="badge good">Bueno</span></td></tr>
+              <tr><td class="cell-name">Tasa de conversión</td><td class="num">0,05 %</td><td class="num">0,0326 %</td><td><span class="badge good">Bueno</span></td></tr>
+              <tr><td class="cell-name">Tasa de rebote</td><td class="num">0,95 %</td><td class="num">0,517 %</td><td><span class="badge warn">Regular</span></td></tr>
+              <tr><td class="cell-name">Quejas de spam</td><td class="num">0 %</td><td class="num">0,0061 %</td><td><span class="badge good">Excelente</span></td></tr>
+              <tr><td class="cell-name">Tasa de bajas</td><td class="num">0,107 %</td><td class="num">0,251 %</td><td><span class="badge good">Excelente</span></td></tr>
+              <tr><td class="cell-name">Ingreso por destinatario</td><td class="num">0,0356 €</td><td class="num">0,056 €</td><td><span class="badge warn">Regular</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="read-banner">
+        <div class="tag">Lectura</div>
+        <div class="txt">Dos señales fuertes: la salud de lista (bajas y spam, ambas en el percentil más alto del sector) y la tasa de clics superan con holgura a la mediana. Los puntos a trabajar son la apertura y el ingreso por destinatario en campañas, los dos por debajo de la referencia. La base es limpia y receptiva; falta exprimir la fase de campaña.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quote">
+    <div class="wrap">
+      <p>El primer mes en Klaviyo no era para exprimir, sino para construir y medir. Hoy los flujos ya sostienen 9 de cada 10 euros que genera el email. <em>El siguiente paso es convertir las campañas en el segundo motor de venta.</em></p>
+    </div>
+  </section>
+
+  <!-- 05 PLAN -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">05 · Plan para el siguiente periodo</div>
+      <h2 class="sec-title">De medir<br>a decidir.</h2>
+      <p class="sec-lead">Con la base ya construida y un mes de data real encima, el foco se mueve de montar a optimizar. Cinco acciones concretas para el próximo periodo, ordenadas por prioridad.</p>
+
+      <ul class="actions">
+        <li>
+          <div>
+            <div class="at">Subir la apertura de campañas</div>
+            <div class="ab">Probar nuevos horarios y días de envío y testear asuntos A/B con ángulos psicológicos distintos: beneficio directo, curiosidad y prueba social. Meta: acercar el 37,2 % a la mediana del sector.</div>
+          </div>
+          <div class="ap alta">Prioridad<b>Alta</b></div>
+        </li>
+        <li>
+          <div>
+            <div class="at">Reformular las campañas de contenido</div>
+            <div class="ab">Los envíos puramente editoriales no convirtieron. Cada newsletter incluirá producto con precio visible y un único CTA claro hacia compra, manteniendo el tono de marca pero con destino comercial.</div>
+          </div>
+          <div class="ap alta">Prioridad<b>Alta</b></div>
+        </li>
+        <li>
+          <div>
+            <div class="at">Esperar resultados de los flujos activos</div>
+            <div class="ab">Bienvenida, carrito y browse ya están construidos y midiéndose. Se mantienen sin cambios un ciclo más para consolidar data suficiente antes de iterar sobre su creatividad.</div>
+          </div>
+          <div class="ap media">Prioridad<b>Media</b></div>
+        </li>
+        <li>
+          <div>
+            <div class="at">Alimentar el flujo de carrito</div>
+            <div class="ab">Es el flujo más rentable por destinatario (1,25 €) pero solo entró a 327 personas. Ampliar la captación de entrada elevaría ingresos sin tocar la creatividad existente.</div>
+          </div>
+          <div class="ap media">Prioridad<b>Media</b></div>
+        </li>
+        <li>
+          <div>
+            <div class="at">Activar de verdad Back in stock</div>
+            <div class="ab">Solo alcanzó a 3 personas este periodo. Conectar más referencias agotadas al flujo permite capturar demanda que ya existe, con coste de producción cero.</div>
+          </div>
+          <div class="ap media">Prioridad<b>Media</b></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 06 OBJETIVOS -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-num">06 · Objetivos del próximo periodo</div>
+      <h2 class="sec-title">Números<br>a batir.</h2>
+      <p class="sec-lead">Metas realistas sobre la baseline de este primer mes. Conservadoras en lo no probado, exigentes donde ya hay tracción.</p>
+
+      <div class="kpi-grid">
+        <div class="kpi b-yellow">
+          <div class="label">Apertura · campañas</div>
+          <div class="value">&gt; 40 <small>%</small></div>
+          <div class="sub">Desde 37,2 %</div>
+          <div class="foot"><span class="badge neutral">Objetivo</span></div>
+        </div>
+        <div class="kpi b-purple">
+          <div class="label">Atribuido a email</div>
+          <div class="value">&gt; 7.000 <small>€</small></div>
+          <div class="sub">Desde 5.876,91 €</div>
+          <div class="foot"><span class="badge neutral">Objetivo</span></div>
+        </div>
+        <div class="kpi b-orange">
+          <div class="label">Pedidos · campañas</div>
+          <div class="value">&gt; 12</div>
+          <div class="sub">Desde 8 pedidos</div>
+          <div class="foot"><span class="badge neutral">Objetivo</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Share email / total tienda</div>
+          <div class="value">&gt; 8 <small>%</small></div>
+          <div class="sub">Desde 6,97 %</div>
+          <div class="foot"><span class="badge neutral">Objetivo</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="fb">NAVY MARKETING</div>
+      <div class="fl">
+        Reporte de rendimiento · Email Marketing<br>
+        Diavlo · Mayo-junio 2026 · ESP<br>
+        Datos de Klaviyo · Elaborado para uso de cliente
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
